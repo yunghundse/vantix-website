@@ -16,9 +16,6 @@
       font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       -webkit-font-smoothing: antialiased;
     }
-    .hero-gradient {
-      background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%);
-    }
   </style>
 </head>
 <body>
@@ -26,6 +23,11 @@
 
   <script type="text/babel">
     const { useState, useEffect, createContext, useContext } = React;
+
+    // =============================================
+    // KONFIGURATION - HIER DEINE FORMSPREE ID EINTRAGEN
+    // =============================================
+    const FORMSPREE_ID = "YOUR_FORMSPREE_ID"; // <-- Ersetze mit deiner Formspree Form ID (z.B. "xpznqwka")
 
     // ============================================
     // TRANSLATIONS - 5 LANGUAGES
@@ -93,8 +95,10 @@
             interests: ['Allgemeine Anfrage', 'Partnerschaft', 'Investment', 'Karriere', 'Presse'],
             message: 'Nachricht',
             submit: 'Absenden',
-            success: 'Vielen Dank.',
-            successMsg: 'Wir melden uns zeitnah bei Ihnen.'
+            sending: 'Wird gesendet...',
+            success: 'Vielen Dank!',
+            successMsg: 'Ihre Nachricht wurde erfolgreich gesendet. Wir melden uns zeitnah bei Ihnen.',
+            error: 'Fehler beim Senden. Bitte versuchen Sie es erneut.'
           },
           placeholders: {
             name: 'Ihr Name',
@@ -171,8 +175,10 @@
             interests: ['General Inquiry', 'Partnership', 'Investment', 'Careers', 'Press'],
             message: 'Message',
             submit: 'Submit',
-            success: 'Thank you.',
-            successMsg: 'We will get back to you shortly.'
+            sending: 'Sending...',
+            success: 'Thank you!',
+            successMsg: 'Your message has been sent successfully. We will get back to you shortly.',
+            error: 'Error sending. Please try again.'
           },
           placeholders: {
             name: 'Your name',
@@ -249,8 +255,10 @@
             interests: ['Demande générale', 'Partenariat', 'Investissement', 'Carrières', 'Presse'],
             message: 'Message',
             submit: 'Envoyer',
-            success: 'Merci.',
-            successMsg: 'Nous vous recontacterons rapidement.'
+            sending: 'Envoi en cours...',
+            success: 'Merci!',
+            successMsg: 'Votre message a été envoyé. Nous vous recontacterons rapidement.',
+            error: 'Erreur d\'envoi. Veuillez réessayer.'
           },
           placeholders: {
             name: 'Votre nom',
@@ -327,8 +335,10 @@
             interests: ['Consulta general', 'Asociación', 'Inversión', 'Carreras', 'Prensa'],
             message: 'Mensaje',
             submit: 'Enviar',
-            success: 'Gracias.',
-            successMsg: 'Nos pondremos en contacto pronto.'
+            sending: 'Enviando...',
+            success: '¡Gracias!',
+            successMsg: 'Tu mensaje ha sido enviado. Nos pondremos en contacto pronto.',
+            error: 'Error al enviar. Por favor, inténtalo de nuevo.'
           },
           placeholders: {
             name: 'Tu nombre',
@@ -405,8 +415,10 @@
             interests: ['一般咨询', '合作', '投资', '职业', '媒体'],
             message: '信息',
             submit: '提交',
-            success: '谢谢。',
-            successMsg: '我们会尽快与您联系。'
+            sending: '发送中...',
+            success: '谢谢！',
+            successMsg: '您的消息已成功发送。我们会尽快与您联系。',
+            error: '发送错误。请重试。'
           },
           placeholders: {
             name: '您的姓名',
@@ -442,11 +454,11 @@
     const LanguageSwitcher = () => {
       const { lang, setLang } = useLanguage();
       const languages = [
-        { code: 'de', label: 'DE', flag: '🇩🇪' },
-        { code: 'en', label: 'EN', flag: '🇬🇧' },
-        { code: 'fr', label: 'FR', flag: '🇫🇷' },
-        { code: 'es', label: 'ES', flag: '🇪🇸' },
-        { code: 'zh', label: '中文', flag: '🇨🇳' }
+        { code: 'de', label: 'DE' },
+        { code: 'en', label: 'EN' },
+        { code: 'fr', label: 'FR' },
+        { code: 'es', label: 'ES' },
+        { code: 'zh', label: '中文' }
       ];
 
       return (
@@ -460,7 +472,6 @@
                   ? 'bg-black text-white'
                   : 'text-neutral-500 hover:text-black hover:bg-neutral-100'
               }`}
-              title={l.flag}
             >
               {l.label}
             </button>
@@ -544,12 +555,11 @@
       );
     };
 
-    // Hero Section with Image
+    // Hero Section
     const HeroSection = () => {
       const { t } = useLanguage();
       return (
         <section id="home" className="relative min-h-screen flex items-center justify-center">
-          {/* Background Image */}
           <div className="absolute inset-0">
             <img
               src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
@@ -560,7 +570,6 @@
           </div>
 
           <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
-            {/* Made in Germany Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium mb-8">
               <span>🇩🇪</span>
               <span>{t.hero.badge}</span>
@@ -622,7 +631,6 @@
               ))}
             </div>
 
-            {/* Founder */}
             <div className="mt-32 pt-16 border-t border-neutral-200">
               <div className="flex flex-col md:flex-row md:items-center gap-8">
                 <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center flex-shrink-0">
@@ -745,27 +753,36 @@
       );
     };
 
-    // Contact Section
+    // Contact Section with Formspree
     const ContactSection = () => {
       const { t } = useLanguage();
-      const [formData, setFormData] = useState({ name: '', email: '', company: '', interest: '', message: '' });
-      const [errors, setErrors] = useState({});
-      const [submitted, setSubmitted] = useState(false);
+      const [status, setStatus] = useState('idle'); // idle, sending, success, error
 
-      const handleSubmit = (e) => {
+      const handleSubmit = async (e) => {
         e.preventDefault();
-        const newErrors = {};
-        if (!formData.name.trim()) newErrors.name = true;
-        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = true;
-        if (!formData.message.trim()) newErrors.message = true;
+        setStatus('sending');
 
-        if (Object.keys(newErrors).length > 0) {
-          setErrors(newErrors);
-          return;
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+          const response = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+              'Accept': 'application/json'
+            }
+          });
+
+          if (response.ok) {
+            setStatus('success');
+            form.reset();
+          } else {
+            setStatus('error');
+          }
+        } catch (error) {
+          setStatus('error');
         }
-
-        console.log('Form submitted:', formData);
-        setSubmitted(true);
       };
 
       return (
@@ -808,12 +825,20 @@
               </div>
 
               <div className="bg-white p-8 md:p-10 rounded-2xl shadow-sm">
-                {submitted ? (
+                {status === 'success' ? (
                   <div className="h-full flex items-center justify-center text-center py-16">
                     <div>
-                      <div className="text-5xl mb-6">✓</div>
+                      <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <span className="text-green-600 text-2xl">✓</span>
+                      </div>
                       <h3 className="text-2xl font-semibold text-black mb-2">{t.contact.form.success}</h3>
                       <p className="text-neutral-600">{t.contact.form.successMsg}</p>
+                      <button
+                        onClick={() => setStatus('idle')}
+                        className="mt-6 text-black hover:underline"
+                      >
+                        Neue Nachricht senden
+                      </button>
                     </div>
                   </div>
                 ) : (
@@ -823,9 +848,9 @@
                         <label className="block text-sm font-medium text-black mb-2">{t.contact.form.name} *</label>
                         <input
                           type="text"
-                          value={formData.name}
-                          onChange={(e) => { setFormData({...formData, name: e.target.value}); setErrors({...errors, name: false}); }}
-                          className={`w-full px-4 py-3 bg-neutral-50 border ${errors.name ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                          name="name"
+                          required
+                          className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
                           placeholder={t.contact.placeholders.name}
                         />
                       </div>
@@ -833,9 +858,9 @@
                         <label className="block text-sm font-medium text-black mb-2">{t.contact.form.email} *</label>
                         <input
                           type="email"
-                          value={formData.email}
-                          onChange={(e) => { setFormData({...formData, email: e.target.value}); setErrors({...errors, email: false}); }}
-                          className={`w-full px-4 py-3 bg-neutral-50 border ${errors.email ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                          name="email"
+                          required
+                          className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
                           placeholder={t.contact.placeholders.email}
                         />
                       </div>
@@ -846,8 +871,7 @@
                         <label className="block text-sm font-medium text-black mb-2">{t.contact.form.company}</label>
                         <input
                           type="text"
-                          value={formData.company}
-                          onChange={(e) => setFormData({...formData, company: e.target.value})}
+                          name="company"
                           className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
                           placeholder={t.contact.placeholders.company}
                         />
@@ -855,8 +879,7 @@
                       <div>
                         <label className="block text-sm font-medium text-black mb-2">{t.contact.form.interest}</label>
                         <select
-                          value={formData.interest}
-                          onChange={(e) => setFormData({...formData, interest: e.target.value})}
+                          name="interest"
                           className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
                         >
                           <option value="">—</option>
@@ -870,19 +893,24 @@
                     <div>
                       <label className="block text-sm font-medium text-black mb-2">{t.contact.form.message} *</label>
                       <textarea
-                        value={formData.message}
-                        onChange={(e) => { setFormData({...formData, message: e.target.value}); setErrors({...errors, message: false}); }}
+                        name="message"
+                        required
                         rows={5}
-                        className={`w-full px-4 py-3 bg-neutral-50 border ${errors.message ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors resize-none`}
+                        className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors resize-none"
                         placeholder={t.contact.placeholders.message}
                       />
                     </div>
 
+                    {status === 'error' && (
+                      <p className="text-red-600 text-sm">{t.contact.form.error}</p>
+                    )}
+
                     <button
                       type="submit"
-                      className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-medium rounded-lg transition-colors"
+                      disabled={status === 'sending'}
+                      className="w-full py-4 bg-black hover:bg-neutral-800 disabled:bg-neutral-400 text-white font-medium rounded-lg transition-colors"
                     >
-                      {t.contact.form.submit}
+                      {status === 'sending' ? t.contact.form.sending : t.contact.form.submit}
                     </button>
                   </form>
                 )}
@@ -909,8 +937,8 @@
               </div>
               <p className="text-sm text-neutral-500">© 2026 VANTIX. All rights reserved.</p>
               <div className="flex gap-6">
-                <a href="#" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.imprint}</a>
-                <a href="#" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.privacy}</a>
+                <a href="impressum.html" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.imprint}</a>
+                <a href="datenschutz.html" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.privacy}</a>
               </div>
             </div>
           </div>
