@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="VANTIX - Wir entwickeln und skalieren KI-Unternehmen der nächsten Generation. Made in Germany.">
+  <title>VANTIX | Venture Studio</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%23000'/><text x='50' y='68' font-family='system-ui' font-size='48' font-weight='700' fill='%23fff' text-anchor='middle'>V</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .hero-gradient {
+      background: linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 100%);
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, createContext, useContext } = React;
+
+    // ============================================
+    // TRANSLATIONS - 5 LANGUAGES
+    // ============================================
+    const translations = {
+      de: {
+        nav: { vision: 'Vision', career: 'Karriere', partner: 'Partner werden', contact: 'Kontakt' },
+        hero: {
+          badge: 'Made in Germany',
+          title: 'Die Intelligenz von morgen.',
+          subtitle: 'VANTIX entwickelt und skaliert KI-Unternehmen der nächsten Generation.',
+          cta: 'Mehr erfahren'
+        },
+        vision: {
+          label: 'Vision',
+          title: 'Mehr als eine Agentur. Eine Schmiede.',
+          desc: 'VANTIX ist ein Venture Studio. Wir identifizieren Marktlücken, entwickeln proprietäre KI-Lösungen und formen sie zu eigenständigen Unternehmen. Von der Idee zum Konzern.',
+          steps: [
+            { num: '01', title: 'Identifizieren', desc: 'Wir erkennen Chancen, bevor sie offensichtlich werden.' },
+            { num: '02', title: 'Entwickeln', desc: 'Proprietäre Lösungen, die Branchen transformieren.' },
+            { num: '03', title: 'Skalieren', desc: 'Aus Prototypen werden marktführende Unternehmen.' }
+          ],
+          founder: 'Gründer',
+          founderBio: 'Als Architekt hinter VANTIX verbindet Jan technologische Exzellenz mit unternehmerischer Vision. Seine Mission: KI-Unternehmen schaffen, die Märkte nicht nur bedienen, sondern definieren.'
+        },
+        career: {
+          label: 'Karriere',
+          title: 'Offene Positionen',
+          apply: 'Bewerben',
+          spontaneous: 'Initiativbewerbungen an',
+          jobs: [
+            { title: 'Senior KI-Ingenieur', location: 'Remote / Winterlingen', type: 'Vollzeit' },
+            { title: 'Venture Architect', location: 'Remote / Winterlingen', type: 'Vollzeit' },
+            { title: 'Growth Lead', location: 'Remote / Winterlingen', type: 'Vollzeit' }
+          ]
+        },
+        partner: {
+          label: 'Partner werden',
+          title: 'Gemeinsam Größeres schaffen.',
+          subtitle: 'Werden Sie Teil unseres Ökosystems und gestalten Sie die Zukunft der KI mit.',
+          types: [
+            { title: 'Investoren', desc: 'Investieren Sie in zukunftsweisende KI-Ventures mit deutschem Engineering.', icon: '📈' },
+            { title: 'Technologie-Partner', desc: 'Bringen Sie Ihre Expertise ein und profitieren Sie von Synergien.', icon: '🔧' },
+            { title: 'Strategische Allianzen', desc: 'Erschließen Sie neue Märkte durch unsere innovativen Lösungen.', icon: '🤝' }
+          ],
+          benefits: 'Ihre Vorteile',
+          benefitsList: [
+            'Zugang zu innovativen KI-Technologien',
+            'Netzwerk aus Experten und Visionären',
+            'Made in Germany Qualitätsstandard',
+            'Langfristige Wachstumsperspektiven'
+          ],
+          cta: 'Partnerschaft anfragen'
+        },
+        contact: {
+          label: 'Kontakt',
+          title: 'Sprechen wir.',
+          subtitle: 'Ob Partnerschaft, Investment oder Karriere – wir freuen uns auf den Austausch.',
+          hq: 'Hauptsitz',
+          form: {
+            name: 'Name',
+            email: 'E-Mail',
+            company: 'Unternehmen (optional)',
+            interest: 'Interessenbereich',
+            interests: ['Allgemeine Anfrage', 'Partnerschaft', 'Investment', 'Karriere', 'Presse'],
+            message: 'Nachricht',
+            submit: 'Absenden',
+            success: 'Vielen Dank.',
+            successMsg: 'Wir melden uns zeitnah bei Ihnen.'
+          },
+          placeholders: {
+            name: 'Ihr Name',
+            email: 'ihre@email.de',
+            company: 'Ihr Unternehmen',
+            message: 'Ihre Nachricht...'
+          }
+        },
+        footer: {
+          imprint: 'Impressum',
+          privacy: 'Datenschutz',
+          madeIn: 'Entwickelt in Deutschland'
+        }
+      },
+      en: {
+        nav: { vision: 'Vision', career: 'Careers', partner: 'Become Partner', contact: 'Contact' },
+        hero: {
+          badge: 'Made in Germany',
+          title: 'The Intelligence of Tomorrow.',
+          subtitle: 'VANTIX develops and scales the next generation of AI enterprises.',
+          cta: 'Learn more'
+        },
+        vision: {
+          label: 'Vision',
+          title: 'More than an agency. A foundry.',
+          desc: 'VANTIX is a Venture Studio. We identify market gaps, develop proprietary AI solutions, and transform them into independent companies. From idea to corporation.',
+          steps: [
+            { num: '01', title: 'Identify', desc: 'We recognize opportunities before they become obvious.' },
+            { num: '02', title: 'Develop', desc: 'Proprietary solutions that transform industries.' },
+            { num: '03', title: 'Scale', desc: 'Prototypes become market-leading companies.' }
+          ],
+          founder: 'Founder',
+          founderBio: 'As the architect behind VANTIX, Jan combines technological excellence with entrepreneurial vision. His mission: creating AI companies that don\'t just serve markets, but define them.'
+        },
+        career: {
+          label: 'Careers',
+          title: 'Open Positions',
+          apply: 'Apply',
+          spontaneous: 'Unsolicited applications to',
+          jobs: [
+            { title: 'Senior AI Engineer', location: 'Remote / Winterlingen', type: 'Full-time' },
+            { title: 'Venture Architect', location: 'Remote / Winterlingen', type: 'Full-time' },
+            { title: 'Growth Lead', location: 'Remote / Winterlingen', type: 'Full-time' }
+          ]
+        },
+        partner: {
+          label: 'Become Partner',
+          title: 'Create something greater together.',
+          subtitle: 'Become part of our ecosystem and shape the future of AI.',
+          types: [
+            { title: 'Investors', desc: 'Invest in forward-thinking AI ventures with German engineering.', icon: '📈' },
+            { title: 'Technology Partners', desc: 'Bring your expertise and benefit from synergies.', icon: '🔧' },
+            { title: 'Strategic Alliances', desc: 'Access new markets through our innovative solutions.', icon: '🤝' }
+          ],
+          benefits: 'Your Benefits',
+          benefitsList: [
+            'Access to innovative AI technologies',
+            'Network of experts and visionaries',
+            'Made in Germany quality standard',
+            'Long-term growth perspectives'
+          ],
+          cta: 'Request Partnership'
+        },
+        contact: {
+          label: 'Contact',
+          title: 'Let\'s talk.',
+          subtitle: 'Whether partnership, investment, or career – we look forward to hearing from you.',
+          hq: 'Headquarters',
+          form: {
+            name: 'Name',
+            email: 'Email',
+            company: 'Company (optional)',
+            interest: 'Area of Interest',
+            interests: ['General Inquiry', 'Partnership', 'Investment', 'Careers', 'Press'],
+            message: 'Message',
+            submit: 'Submit',
+            success: 'Thank you.',
+            successMsg: 'We will get back to you shortly.'
+          },
+          placeholders: {
+            name: 'Your name',
+            email: 'your@email.com',
+            company: 'Your company',
+            message: 'Your message...'
+          }
+        },
+        footer: {
+          imprint: 'Imprint',
+          privacy: 'Privacy',
+          madeIn: 'Developed in Germany'
+        }
+      },
+      fr: {
+        nav: { vision: 'Vision', career: 'Carrières', partner: 'Devenir Partenaire', contact: 'Contact' },
+        hero: {
+          badge: 'Made in Germany',
+          title: 'L\'intelligence de demain.',
+          subtitle: 'VANTIX développe et fait évoluer la prochaine génération d\'entreprises IA.',
+          cta: 'En savoir plus'
+        },
+        vision: {
+          label: 'Vision',
+          title: 'Plus qu\'une agence. Une forge.',
+          desc: 'VANTIX est un Venture Studio. Nous identifions les lacunes du marché, développons des solutions IA propriétaires et les transformons en entreprises indépendantes.',
+          steps: [
+            { num: '01', title: 'Identifier', desc: 'Nous reconnaissons les opportunités avant qu\'elles ne deviennent évidentes.' },
+            { num: '02', title: 'Développer', desc: 'Des solutions propriétaires qui transforment les industries.' },
+            { num: '03', title: 'Scaler', desc: 'Les prototypes deviennent des entreprises leaders.' }
+          ],
+          founder: 'Fondateur',
+          founderBio: 'En tant qu\'architecte derrière VANTIX, Jan allie excellence technologique et vision entrepreneuriale. Sa mission : créer des entreprises IA qui définissent les marchés.'
+        },
+        career: {
+          label: 'Carrières',
+          title: 'Postes ouverts',
+          apply: 'Postuler',
+          spontaneous: 'Candidatures spontanées à',
+          jobs: [
+            { title: 'Ingénieur IA Senior', location: 'Remote / Winterlingen', type: 'Temps plein' },
+            { title: 'Venture Architect', location: 'Remote / Winterlingen', type: 'Temps plein' },
+            { title: 'Growth Lead', location: 'Remote / Winterlingen', type: 'Temps plein' }
+          ]
+        },
+        partner: {
+          label: 'Devenir Partenaire',
+          title: 'Créons ensemble quelque chose de plus grand.',
+          subtitle: 'Rejoignez notre écosystème et façonnez l\'avenir de l\'IA.',
+          types: [
+            { title: 'Investisseurs', desc: 'Investissez dans des ventures IA innovantes avec l\'ingénierie allemande.', icon: '📈' },
+            { title: 'Partenaires Tech', desc: 'Apportez votre expertise et bénéficiez des synergies.', icon: '🔧' },
+            { title: 'Alliances Stratégiques', desc: 'Accédez à de nouveaux marchés grâce à nos solutions.', icon: '🤝' }
+          ],
+          benefits: 'Vos avantages',
+          benefitsList: [
+            'Accès aux technologies IA innovantes',
+            'Réseau d\'experts et de visionnaires',
+            'Standard de qualité Made in Germany',
+            'Perspectives de croissance à long terme'
+          ],
+          cta: 'Demander un partenariat'
+        },
+        contact: {
+          label: 'Contact',
+          title: 'Parlons.',
+          subtitle: 'Partenariat, investissement ou carrière – nous avons hâte d\'échanger avec vous.',
+          hq: 'Siège social',
+          form: {
+            name: 'Nom',
+            email: 'E-mail',
+            company: 'Entreprise (optionnel)',
+            interest: 'Domaine d\'intérêt',
+            interests: ['Demande générale', 'Partenariat', 'Investissement', 'Carrières', 'Presse'],
+            message: 'Message',
+            submit: 'Envoyer',
+            success: 'Merci.',
+            successMsg: 'Nous vous recontacterons rapidement.'
+          },
+          placeholders: {
+            name: 'Votre nom',
+            email: 'votre@email.fr',
+            company: 'Votre entreprise',
+            message: 'Votre message...'
+          }
+        },
+        footer: {
+          imprint: 'Mentions légales',
+          privacy: 'Confidentialité',
+          madeIn: 'Développé en Allemagne'
+        }
+      },
+      es: {
+        nav: { vision: 'Visión', career: 'Carreras', partner: 'Ser Socio', contact: 'Contacto' },
+        hero: {
+          badge: 'Made in Germany',
+          title: 'La inteligencia del mañana.',
+          subtitle: 'VANTIX desarrolla y escala la próxima generación de empresas de IA.',
+          cta: 'Saber más'
+        },
+        vision: {
+          label: 'Visión',
+          title: 'Más que una agencia. Una forja.',
+          desc: 'VANTIX es un Venture Studio. Identificamos brechas de mercado, desarrollamos soluciones de IA propietarias y las transformamos en empresas independientes.',
+          steps: [
+            { num: '01', title: 'Identificar', desc: 'Reconocemos oportunidades antes de que sean obvias.' },
+            { num: '02', title: 'Desarrollar', desc: 'Soluciones propietarias que transforman industrias.' },
+            { num: '03', title: 'Escalar', desc: 'Los prototipos se convierten en empresas líderes.' }
+          ],
+          founder: 'Fundador',
+          founderBio: 'Como arquitecto detrás de VANTIX, Jan combina excelencia tecnológica con visión empresarial. Su misión: crear empresas de IA que definan mercados.'
+        },
+        career: {
+          label: 'Carreras',
+          title: 'Posiciones abiertas',
+          apply: 'Aplicar',
+          spontaneous: 'Candidaturas espontáneas a',
+          jobs: [
+            { title: 'Ingeniero IA Senior', location: 'Remoto / Winterlingen', type: 'Tiempo completo' },
+            { title: 'Venture Architect', location: 'Remoto / Winterlingen', type: 'Tiempo completo' },
+            { title: 'Growth Lead', location: 'Remoto / Winterlingen', type: 'Tiempo completo' }
+          ]
+        },
+        partner: {
+          label: 'Ser Socio',
+          title: 'Creemos algo más grande juntos.',
+          subtitle: 'Únete a nuestro ecosistema y da forma al futuro de la IA.',
+          types: [
+            { title: 'Inversores', desc: 'Invierte en ventures de IA con ingeniería alemana.', icon: '📈' },
+            { title: 'Socios Tecnológicos', desc: 'Aporta tu experiencia y benefíciate de sinergias.', icon: '🔧' },
+            { title: 'Alianzas Estratégicas', desc: 'Accede a nuevos mercados con nuestras soluciones.', icon: '🤝' }
+          ],
+          benefits: 'Tus beneficios',
+          benefitsList: [
+            'Acceso a tecnologías IA innovadoras',
+            'Red de expertos y visionarios',
+            'Estándar de calidad Made in Germany',
+            'Perspectivas de crecimiento a largo plazo'
+          ],
+          cta: 'Solicitar asociación'
+        },
+        contact: {
+          label: 'Contacto',
+          title: 'Hablemos.',
+          subtitle: 'Asociación, inversión o carrera – esperamos tu mensaje.',
+          hq: 'Sede central',
+          form: {
+            name: 'Nombre',
+            email: 'Correo',
+            company: 'Empresa (opcional)',
+            interest: 'Área de interés',
+            interests: ['Consulta general', 'Asociación', 'Inversión', 'Carreras', 'Prensa'],
+            message: 'Mensaje',
+            submit: 'Enviar',
+            success: 'Gracias.',
+            successMsg: 'Nos pondremos en contacto pronto.'
+          },
+          placeholders: {
+            name: 'Tu nombre',
+            email: 'tu@email.es',
+            company: 'Tu empresa',
+            message: 'Tu mensaje...'
+          }
+        },
+        footer: {
+          imprint: 'Aviso legal',
+          privacy: 'Privacidad',
+          madeIn: 'Desarrollado en Alemania'
+        }
+      },
+      zh: {
+        nav: { vision: '愿景', career: '职业', partner: '成为合作伙伴', contact: '联系' },
+        hero: {
+          badge: '德国制造',
+          title: '明日的智能。',
+          subtitle: 'VANTIX 开发和扩展下一代人工智能企业。',
+          cta: '了解更多'
+        },
+        vision: {
+          label: '愿景',
+          title: '不仅是代理机构，而是一个锻造厂。',
+          desc: 'VANTIX 是一家风险工作室。我们识别市场空白，开发专有人工智能解决方案，并将其转化为独立公司。从创意到企业。',
+          steps: [
+            { num: '01', title: '识别', desc: '在机会变得明显之前发现它们。' },
+            { num: '02', title: '开发', desc: '改变行业的专有解决方案。' },
+            { num: '03', title: '扩展', desc: '原型成为市场领先的公司。' }
+          ],
+          founder: '创始人',
+          founderBio: '作为 VANTIX 的架构师，Jan 将技术卓越与创业愿景相结合。他的使命：创建定义市场的人工智能公司。'
+        },
+        career: {
+          label: '职业',
+          title: '空缺职位',
+          apply: '申请',
+          spontaneous: '自荐申请发送至',
+          jobs: [
+            { title: '高级人工智能工程师', location: '远程 / Winterlingen', type: '全职' },
+            { title: 'Venture Architect', location: '远程 / Winterlingen', type: '全职' },
+            { title: '增长主管', location: '远程 / Winterlingen', type: '全职' }
+          ]
+        },
+        partner: {
+          label: '成为合作伙伴',
+          title: '共同创造更大的成就。',
+          subtitle: '加入我们的生态系统，塑造人工智能的未来。',
+          types: [
+            { title: '投资者', desc: '投资具有德国工程的前瞻性人工智能企业。', icon: '📈' },
+            { title: '技术合作伙伴', desc: '贡献您的专业知识并从协同效应中受益。', icon: '🔧' },
+            { title: '战略联盟', desc: '通过我们的创新解决方案进入新市场。', icon: '🤝' }
+          ],
+          benefits: '您的优势',
+          benefitsList: [
+            '获得创新人工智能技术',
+            '专家和远见者网络',
+            '德国制造质量标准',
+            '长期增长前景'
+          ],
+          cta: '申请合作'
+        },
+        contact: {
+          label: '联系',
+          title: '让我们谈谈。',
+          subtitle: '无论是合作、投资还是职业 - 我们期待您的来信。',
+          hq: '总部',
+          form: {
+            name: '姓名',
+            email: '电子邮件',
+            company: '公司（可选）',
+            interest: '兴趣领域',
+            interests: ['一般咨询', '合作', '投资', '职业', '媒体'],
+            message: '信息',
+            submit: '提交',
+            success: '谢谢。',
+            successMsg: '我们会尽快与您联系。'
+          },
+          placeholders: {
+            name: '您的姓名',
+            email: 'your@email.com',
+            company: '您的公司',
+            message: '您的信息...'
+          }
+        },
+        footer: {
+          imprint: '版本说明',
+          privacy: '隐私',
+          madeIn: '德国开发'
+        }
+      }
+    };
+
+    // Language Context
+    const LanguageContext = createContext();
+    const useLanguage = () => useContext(LanguageContext);
+
+    // Language Provider
+    const LanguageProvider = ({ children }) => {
+      const [lang, setLang] = useState('de');
+      const t = translations[lang];
+      return (
+        <LanguageContext.Provider value={{ lang, setLang, t }}>
+          {children}
+        </LanguageContext.Provider>
+      );
+    };
+
+    // Language Switcher
+    const LanguageSwitcher = () => {
+      const { lang, setLang } = useLanguage();
+      const languages = [
+        { code: 'de', label: 'DE', flag: '🇩🇪' },
+        { code: 'en', label: 'EN', flag: '🇬🇧' },
+        { code: 'fr', label: 'FR', flag: '🇫🇷' },
+        { code: 'es', label: 'ES', flag: '🇪🇸' },
+        { code: 'zh', label: '中文', flag: '🇨🇳' }
+      ];
+
+      return (
+        <div className="flex items-center gap-1">
+          {languages.map((l) => (
+            <button
+              key={l.code}
+              onClick={() => setLang(l.code)}
+              className={`px-2 py-1 text-xs rounded transition-colors ${
+                lang === l.code
+                  ? 'bg-black text-white'
+                  : 'text-neutral-500 hover:text-black hover:bg-neutral-100'
+              }`}
+              title={l.flag}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
+      );
+    };
+
+    // Navigation
+    const Navigation = ({ scrollToSection }) => {
+      const { t } = useLanguage();
+      const [isOpen, setIsOpen] = useState(false);
+      const [scrolled, setScrolled] = useState(false);
+
+      useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, []);
+
+      const navItems = [
+        { id: 'vision', label: t.nav.vision },
+        { id: 'career', label: t.nav.career },
+        { id: 'partner', label: t.nav.partner },
+        { id: 'contact', label: t.nav.contact }
+      ];
+
+      return (
+        <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled ? 'bg-white/90 backdrop-blur-xl border-b border-neutral-200' : 'bg-white/50 backdrop-blur-sm'
+        }`}>
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex items-center justify-between h-16">
+              <button
+                onClick={() => scrollToSection('home')}
+                className="text-xl font-semibold tracking-tight text-black"
+              >
+                VANTIX
+              </button>
+
+              <div className="hidden lg:flex items-center gap-8">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => scrollToSection(item.id)}
+                    className="text-sm text-neutral-600 hover:text-black transition-colors"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                <div className="w-px h-4 bg-neutral-300" />
+                <LanguageSwitcher />
+              </div>
+
+              <button
+                className="lg:hidden p-2 text-black"
+                onClick={() => setIsOpen(!isOpen)}
+              >
+                {isOpen ? '✕' : '☰'}
+              </button>
+            </div>
+
+            {isOpen && (
+              <div className="lg:hidden py-4 border-t border-neutral-200">
+                {navItems.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => { scrollToSection(item.id); setIsOpen(false); }}
+                    className="block w-full text-left py-3 text-neutral-600 hover:text-black"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+                <div className="pt-4 mt-4 border-t border-neutral-200">
+                  <LanguageSwitcher />
+                </div>
+              </div>
+            )}
+          </div>
+        </nav>
+      );
+    };
+
+    // Hero Section with Image
+    const HeroSection = () => {
+      const { t } = useLanguage();
+      return (
+        <section id="home" className="relative min-h-screen flex items-center justify-center">
+          {/* Background Image */}
+          <div className="absolute inset-0">
+            <img
+              src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80"
+              alt="Technology background"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-white/80" />
+          </div>
+
+          <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
+            {/* Made in Germany Badge */}
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-sm font-medium mb-8">
+              <span>🇩🇪</span>
+              <span>{t.hero.badge}</span>
+            </div>
+
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-semibold tracking-tight text-black leading-tight mb-8">
+              {t.hero.title}
+            </h1>
+            <p className="text-xl md:text-2xl text-neutral-600 max-w-2xl mx-auto mb-12 font-light">
+              {t.hero.subtitle}
+            </p>
+            <button
+              onClick={() => document.getElementById('vision').scrollIntoView({ behavior: 'smooth' })}
+              className="inline-flex items-center gap-2 text-lg text-black hover:text-neutral-600 transition-colors group"
+            >
+              {t.hero.cta}
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </button>
+          </div>
+        </section>
+      );
+    };
+
+    // Vision Section
+    const VisionSection = () => {
+      const { t } = useLanguage();
+      return (
+        <section id="vision" className="py-32 bg-neutral-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-16 items-center mb-24">
+              <div>
+                <p className="text-sm text-neutral-400 uppercase tracking-widest mb-4">{t.vision.label}</p>
+                <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-black mb-8">
+                  {t.vision.title}
+                </h2>
+                <p className="text-xl text-neutral-600 leading-relaxed">
+                  {t.vision.desc}
+                </p>
+              </div>
+              <div className="relative">
+                <img
+                  src="https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&q=80"
+                  alt="AI Technology"
+                  className="rounded-2xl shadow-2xl"
+                />
+                <div className="absolute -bottom-4 -right-4 bg-black text-white px-4 py-2 rounded-lg text-sm font-medium">
+                  🇩🇪 German Engineering
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-12 mt-20">
+              {t.vision.steps.map((item) => (
+                <div key={item.num}>
+                  <p className="text-sm text-neutral-400 mb-4">{item.num}</p>
+                  <h3 className="text-2xl font-semibold text-black mb-3">{item.title}</h3>
+                  <p className="text-neutral-600">{item.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Founder */}
+            <div className="mt-32 pt-16 border-t border-neutral-200">
+              <div className="flex flex-col md:flex-row md:items-center gap-8">
+                <div className="w-24 h-24 rounded-full bg-black flex items-center justify-center flex-shrink-0">
+                  <span className="text-2xl font-semibold text-white">JH</span>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-semibold text-black">Jan Hundsdorff</h3>
+                  <p className="text-neutral-500 mb-4">{t.vision.founder}</p>
+                  <p className="text-neutral-600 max-w-xl">{t.vision.founderBio}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Career Section
+    const CareerSection = () => {
+      const { t } = useLanguage();
+      return (
+        <section id="career" className="py-32 bg-white">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-16 items-start">
+              <div>
+                <p className="text-sm text-neutral-400 uppercase tracking-widest mb-4">{t.career.label}</p>
+                <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-black mb-8">
+                  {t.career.title}
+                </h2>
+                <img
+                  src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=600&q=80"
+                  alt="Team collaboration"
+                  className="rounded-2xl mt-8 hidden lg:block"
+                />
+              </div>
+
+              <div>
+                <div className="divide-y divide-neutral-200">
+                  {t.career.jobs.map((job, i) => (
+                    <div key={i} className="py-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                      <div>
+                        <h3 className="text-xl font-medium text-black mb-1">{job.title}</h3>
+                        <p className="text-neutral-500">{job.location} · {job.type}</p>
+                      </div>
+                      <button className="inline-flex items-center gap-2 text-black hover:text-neutral-600 transition-colors font-medium">
+                        {t.career.apply}
+                        <span className="group-hover:translate-x-1 transition-transform">›</span>
+                      </button>
+                    </div>
+                  ))}
+                </div>
+
+                <p className="mt-8 text-neutral-500">
+                  {t.career.spontaneous}{' '}
+                  <a href="mailto:karriere@vantix.de" className="text-black hover:underline">
+                    karriere@vantix.de
+                  </a>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Partner Section
+    const PartnerSection = () => {
+      const { t } = useLanguage();
+      return (
+        <section id="partner" className="py-32 bg-black text-white">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-20">
+              <p className="text-sm text-neutral-400 uppercase tracking-widest mb-4">{t.partner.label}</p>
+              <h2 className="text-4xl md:text-5xl font-semibold tracking-tight mb-6">
+                {t.partner.title}
+              </h2>
+              <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
+                {t.partner.subtitle}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-8 mb-20">
+              {t.partner.types.map((type, i) => (
+                <div key={i} className="p-8 border border-neutral-800 rounded-2xl hover:border-neutral-600 transition-colors">
+                  <div className="text-4xl mb-6">{type.icon}</div>
+                  <h3 className="text-xl font-semibold mb-3">{type.title}</h3>
+                  <p className="text-neutral-400">{type.desc}</p>
+                </div>
+              ))}
+            </div>
+
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div>
+                <img
+                  src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=600&q=80"
+                  alt="Business partnership"
+                  className="rounded-2xl"
+                />
+              </div>
+              <div>
+                <h3 className="text-2xl font-semibold mb-8">{t.partner.benefits}</h3>
+                <ul className="space-y-4">
+                  {t.partner.benefitsList.map((benefit, i) => (
+                    <li key={i} className="flex items-start gap-3">
+                      <span className="text-green-500 mt-1">✓</span>
+                      <span className="text-neutral-300">{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+                <button
+                  onClick={() => document.getElementById('contact').scrollIntoView({ behavior: 'smooth' })}
+                  className="mt-10 px-8 py-4 bg-white text-black font-medium rounded-lg hover:bg-neutral-200 transition-colors"
+                >
+                  {t.partner.cta}
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Contact Section
+    const ContactSection = () => {
+      const { t } = useLanguage();
+      const [formData, setFormData] = useState({ name: '', email: '', company: '', interest: '', message: '' });
+      const [errors, setErrors] = useState({});
+      const [submitted, setSubmitted] = useState(false);
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const newErrors = {};
+        if (!formData.name.trim()) newErrors.name = true;
+        if (!formData.email.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) newErrors.email = true;
+        if (!formData.message.trim()) newErrors.message = true;
+
+        if (Object.keys(newErrors).length > 0) {
+          setErrors(newErrors);
+          return;
+        }
+
+        console.log('Form submitted:', formData);
+        setSubmitted(true);
+      };
+
+      return (
+        <section id="contact" className="py-32 bg-neutral-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid lg:grid-cols-2 gap-20">
+              <div>
+                <p className="text-sm text-neutral-400 uppercase tracking-widest mb-4">{t.contact.label}</p>
+                <h2 className="text-4xl md:text-5xl font-semibold tracking-tight text-black mb-8">
+                  {t.contact.title}
+                </h2>
+                <p className="text-xl text-neutral-600 mb-12">
+                  {t.contact.subtitle}
+                </p>
+
+                <div className="space-y-6 mb-12">
+                  <div className="flex items-start gap-4">
+                    <span className="text-neutral-400 mt-1">📍</span>
+                    <div>
+                      <p className="font-medium text-black">{t.contact.hq}</p>
+                      <p className="text-neutral-600">Sudetenstraße 27<br />72474 Winterlingen<br />Germany 🇩🇪</p>
+                    </div>
+                  </div>
+                  <div className="flex items-start gap-4">
+                    <span className="text-neutral-400 mt-1">✉️</span>
+                    <div>
+                      <p className="font-medium text-black">E-Mail</p>
+                      <a href="mailto:kontakt@vantix.de" className="text-neutral-600 hover:text-black transition-colors">
+                        kontakt@vantix.de
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                <img
+                  src="https://images.unsplash.com/photo-1497366216548-37526070297c?w=500&q=80"
+                  alt="Office"
+                  className="rounded-2xl hidden lg:block"
+                />
+              </div>
+
+              <div className="bg-white p-8 md:p-10 rounded-2xl shadow-sm">
+                {submitted ? (
+                  <div className="h-full flex items-center justify-center text-center py-16">
+                    <div>
+                      <div className="text-5xl mb-6">✓</div>
+                      <h3 className="text-2xl font-semibold text-black mb-2">{t.contact.form.success}</h3>
+                      <p className="text-neutral-600">{t.contact.form.successMsg}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-black mb-2">{t.contact.form.name} *</label>
+                        <input
+                          type="text"
+                          value={formData.name}
+                          onChange={(e) => { setFormData({...formData, name: e.target.value}); setErrors({...errors, name: false}); }}
+                          className={`w-full px-4 py-3 bg-neutral-50 border ${errors.name ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                          placeholder={t.contact.placeholders.name}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-black mb-2">{t.contact.form.email} *</label>
+                        <input
+                          type="email"
+                          value={formData.email}
+                          onChange={(e) => { setFormData({...formData, email: e.target.value}); setErrors({...errors, email: false}); }}
+                          className={`w-full px-4 py-3 bg-neutral-50 border ${errors.email ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors`}
+                          placeholder={t.contact.placeholders.email}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-black mb-2">{t.contact.form.company}</label>
+                        <input
+                          type="text"
+                          value={formData.company}
+                          onChange={(e) => setFormData({...formData, company: e.target.value})}
+                          className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
+                          placeholder={t.contact.placeholders.company}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-black mb-2">{t.contact.form.interest}</label>
+                        <select
+                          value={formData.interest}
+                          onChange={(e) => setFormData({...formData, interest: e.target.value})}
+                          className="w-full px-4 py-3 bg-neutral-50 border border-neutral-200 rounded-lg focus:outline-none focus:border-black transition-colors"
+                        >
+                          <option value="">—</option>
+                          {t.contact.form.interests.map((interest, i) => (
+                            <option key={i} value={interest}>{interest}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-black mb-2">{t.contact.form.message} *</label>
+                      <textarea
+                        value={formData.message}
+                        onChange={(e) => { setFormData({...formData, message: e.target.value}); setErrors({...errors, message: false}); }}
+                        rows={5}
+                        className={`w-full px-4 py-3 bg-neutral-50 border ${errors.message ? 'border-red-500' : 'border-neutral-200'} rounded-lg focus:outline-none focus:border-black transition-colors resize-none`}
+                        placeholder={t.contact.placeholders.message}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className="w-full py-4 bg-black hover:bg-neutral-800 text-white font-medium rounded-lg transition-colors"
+                    >
+                      {t.contact.form.submit}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    // Footer
+    const Footer = () => {
+      const { t } = useLanguage();
+      return (
+        <footer className="py-12 bg-white border-t border-neutral-200">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <span className="text-xl font-semibold">VANTIX</span>
+                <span className="text-neutral-300">|</span>
+                <span className="text-sm text-neutral-500 flex items-center gap-2">
+                  🇩🇪 {t.footer.madeIn}
+                </span>
+              </div>
+              <p className="text-sm text-neutral-500">© 2026 VANTIX. All rights reserved.</p>
+              <div className="flex gap-6">
+                <a href="#" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.imprint}</a>
+                <a href="#" className="text-sm text-neutral-500 hover:text-black transition-colors">{t.footer.privacy}</a>
+              </div>
+            </div>
+          </div>
+        </footer>
+      );
+    };
+
+    // Main App
+    const App = () => {
+      const scrollToSection = (id) => {
+        document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+      };
+
+      return (
+        <LanguageProvider>
+          <div className="min-h-screen bg-white text-black antialiased">
+            <Navigation scrollToSection={scrollToSection} />
+            <HeroSection />
+            <VisionSection />
+            <CareerSection />
+            <PartnerSection />
+            <ContactSection />
+            <Footer />
+          </div>
+        </LanguageProvider>
+      );
+    };
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>
